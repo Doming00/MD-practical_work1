@@ -105,8 +105,44 @@ summary(df)
 ## Preprocessing of variables
 
 ```{r}
-
+names(df)
+var_bin <- names(df)[c(2,4,6,18:20)]
+summary(df[var_bin])
+var_num <- names(df)[c(1,3,7:10,17)]
+summary(df[var_num])
+var_cat <- names(df)[c(5,11:16,21)]
+summary(df[var_cat])
 ```
 
+### Binary variables
 
+```{r}
+var_bin
+df[,"blue"]
+df$blue <- factor(df$blue, labels = c("NoBth","YesBth"))
+summary(df$blue)
 
+df[,"dual_sim"]
+df$dual_sim <- factor(df$dual_sim, labels = c("No2Sim","Yes2Sim"))
+summary(df$dual_sim)
+
+df[,"four_g"]
+df$four_g <- factor(df$four_g, labels = c("No4G","Yes4G"))
+summary(df$four_g)
+
+df[,"three_g"]
+df$three_g <- factor(df$three_g, labels = c("No3G","Yes3G"))
+summary(df$three_g)
+
+df[,"touch_screen"]
+df$touch_screen <- factor(df$touch_screen, labels = c("NoTouch","YesTouch"))
+summary(df$touch_screen)
+
+df[,"wifi"]
+df$wifi <- factor(df$wifi, labels = c("NoWifi","YesWifi"))
+summary(df$wifi)
+```
+
+No NA's
+
+### 
