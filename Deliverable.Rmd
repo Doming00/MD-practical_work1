@@ -326,19 +326,7 @@ df$price_range <- factor(df$price_range,labels = c("low","medium","high","very h
 summary(df$price_range)
 ```
 
-### Data Imputation
 
-We only find NA's in screenDim, let's impute doing knn
-
-```{r}
-library(DescTools)
-barplot(summary(df$ScreenDim))
-aux1 <- df[!is.na(df$ScreenDim),]
-dim(aux1)
-aux2 <- df[is.na(df$ScreenDim),]
-dim(aux2)
-sdknn = ImputeKnn(df$S, k=10)
-```
 
 
 
