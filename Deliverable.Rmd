@@ -83,7 +83,7 @@ Carreguem el dataset i definim el nostre directori de treball
 #change working directory
 setwd("D:/Drive/UNI/Q8/MD")
 library(readr)
-df <- read_csv("archive/train.csv")
+df <- read_csv("group deliverable/data.csv")
 summary(df)
 ```
 
@@ -104,7 +104,7 @@ summary(df)
 
 ## Preprocessing of variables
 
-```{r}
+```{r var_division}
 names(df)
 var_bin <- names(df)[c(2,4,6,18:20)]
 summary(df[var_bin])
@@ -116,7 +116,7 @@ summary(df[var_cat])
 
 ### Binary variables
 
-```{r}
+```{r binary_prep}
 var_bin
 df[,"blue"]
 df$blue <- factor(df$blue, labels = c("NoBth","YesBth"))
@@ -147,13 +147,13 @@ No NA's
 
 ### Numerical Variables
 
-```{r}
+```{r numerical_prep}
 var_num
 ```
 
 #### Battery Power
 
-```{r}
+```{r battery_prep}
 summary(df$battery_power)
 batNa<-which( c(is.na(df$battery_power), df$battery_power <=0, df$battery_power > 4000)) #best mobiles have this many mAh
 batNa #doesn't have NA
@@ -165,7 +165,7 @@ batOut #doesn't have severe outliers
 
 #### Clock Speed
 
-```{r}
+```{r clockspeed_prep}
 summary(df$clock_speed)
 clkNa<-which( c(is.na(df$clock_speed), df$clock_speed <=0, df$clock_speed > 4))
 clkNa #doesn't have NA
@@ -177,7 +177,7 @@ clkOut #doesn't have severe outliers
 
 #### Internal Memory
 
-```{r}
+```{r int_memory_prep}
 summary(df$int_memory)
 memNa<-which( c(is.na(df$int_memory), df$int_memory <=0, df$int_memory > 128)) 
 memNa #doesn't have NA
@@ -191,7 +191,7 @@ memOut #doesn't have severe outliers
 
 #### Mobile Depth
 
-```{r}
+```{r depth_prep}
 summary(df$m_dep)
 depNa<-which( c(is.na(df$m_dep), df$m_dep <=0, df$m_dep > 1)) 
 depNa #doesn't have NA
@@ -204,7 +204,7 @@ depOut #doesn't have severe outliers
 
 #### Mobile Weigth
 
-```{r}
+```{r weigth_prep}
 summary(df$mobile_wt)
 weigthNa<-which( c(is.na(df$mobile_wt), df$mobile_wt <=0, df$mobile_wt > 200)) 
 weigthNa #doesn't have NA
@@ -217,7 +217,7 @@ weigthOut #doesn't have severe outliers
 
 #### Number of Cores
 
-```{r}
+```{r cores_prep}
 summary(df$n_cores)
 coreNa<-which( c(is.na(df$n_cores), df$n_cores <=0, df$n_cores > 8)) 
 coreNa #has one NA
@@ -229,7 +229,7 @@ coreOut #doesn't have severe outliers
 
 #### Talk Time
 
-```{r}
+```{r talktime_prep}
 summary(df$talk_time)
 talkNa<-which( c(is.na(df$talk_time), df$talk_time <=0, df$talk_time > 20)) 
 talkNa #has one NA
@@ -242,35 +242,54 @@ talkOut #doesn't have severe outliers
 
 ### Categorical Variables
 
-```{r}
+```{r caterogrical_prp}
 var_cat
+```
+
+#### Treat missing values
+
+```{r missing}
+#we find missing values in the screen dimensions
+length(which(df$sc_h == 0))
+length(which(df$sc_w <= 1))
+
+df[df$sc_w <= 1,"sc_w"] <- NaN
+df[df$pc == 0, "pc"] <- NaN
+
+
+
+#knn imputation of sc_w NaN values using all the other numerical categories
+dfaux<-df[,c(var_num,"fc","px_height", "px_width","ram","sc_h","price_range")]
+names(dfaux)
+aux1 <- subset(dfaux, !is.na(df$sc_w) | !is.na(df$pc))#dfaux[subs(!is.na(df$sc_w),!is.na(df$pc)),]
+aux2 <- dfaux[is.na(c(df$sc_w,df$pc)),]
+
+knn.ing = knn(aux1,aux2,df$sc_w[!is.na(c(df$sc_w,df$pc))])
+
+df$sc_w[is.na(df$sc_w)] <- as.numeric(as.character(knn.ing))
+
+which(is.na(df$sc_w))
+
+summary(df$sc_w)
+summary(df$sc_h)
 ```
 
 #### Screen dimension
 
-```{r}
+```{r screendim_prep}
 #sc_h * sc_w = screen dimension (cm^2) into factor
-df$ScreenDim <- df$sc_h * df$sc_w
-df[df$ScreenDim == 0,"ScreenDim"] <- NaN
 
-#knn imputation
-dfaux<-df[,c(var_num,var_cat)]
-names(dfaux)
-aux1 <- dfaux[!is.na(df$ScreenDim),]
-aux2 <- dfaux[is.na(df$ScreenDim),]
 
-knn.ing = knn(aux1,aux2,df$ScreenDim[!is.na(df$ScreenDim)])   
-df$ScreenDim[is.na(df$ScreenDim)] <- as.numeric(as.character(knn.ing))
-
-summary(df$ScreenDim)
-df$ScreenDim <- factor(cut(df$ScreenDim,breaks = c(0,115,230,345)))
-levels(df$ScreenDim) <- c("small","medium","big")
-summary(df$ScreenDim)
+df$sc_d <- df$sc_h * df$sc_w
+summary(df$sc_d)
+df$sc_d <- factor(cut(df$sc_d,breaks = c(0,115,230,345)))
+levels(df$sc_d) <- c("small","medium","big")
+summary(df$sc_d)
 ```
 
 #### Front camera quality
 
-```{r}
+```{r frontcam_prep}
 # fc into factor
 summary(df$fc)
 length(which(df$fc == 0)) #no tienen camara frontal
@@ -281,7 +300,7 @@ summary(df$fc)
 
 #### Main camera quality 
 
-```{r}
+```{r maincam_prep}
 # pc into factor
 summary(df$pc)
 length(which(df$pc == 0)) #no tienen camara principal
@@ -292,24 +311,22 @@ summary(df$pc)
 
 #### Pixel Dimension
 
-```{r}
-#sqrt(df$px_height^2 + df$px_width)/sqrt(df$sc_h^2 + df$sc_w^2) = pixel_dim into factor
-df$pixel_dim <- sqrt(df$px_height^2 + df$px_width)/sqrt(df$sc_h^2 + df$sc_w^2)
-summary(df$pixel_dim)
-df$pixel_dim <- factor(cut(df$pixel_dim,breaks = c(0,1,300,450,1000)))
-levels(df$pixel_dim) <- c("bad","regular","good","excellent")
-summary(df$pixel_dim)
-```
+```{r pixeldim_prep}
+#sqrt(df$px_height^2 + df$px_width)/sqrt(df$sc_h^2 + df$sc_w^2) = px_r into factor
+diag <- (sqrt((df$sc_h^2) + (df$sc_w^2)))
+diag <- diag * 0.393700787
 
-#####################################################################
-#####################################################################
-####################### CORREGIR RANGOS #############################
-#####################################################################
-#####################################################################
+df$px_r <- (sqrt(((df$px_height^2) + df$px_width^2)))/ diag
+summary(df$px_r)
+df$px_r <- factor(cut(df$px_r,breaks = c(0,150,300,450,1500)))
+
+levels(df$px_r) <- c("bad","regular","good","excellent")
+summary(df$px_r)
+```
 
 #### Ram 
 
-```{r}
+```{r ram_prep}
 #ram into factor
 summary(df$ram)
 df$ram <- factor(cut(df$ram,breaks = c(255,2048,3072,4096)))
@@ -319,26 +336,12 @@ summary(df$ram)
 
 #### Price range
 
-```{r}
+```{r price_prep}
 #price range into factor
 summary(df$price_range)
 df$price_range <- factor(df$price_range,labels = c("low","medium","high","very high"))
 summary(df$price_range)
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
