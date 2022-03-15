@@ -83,7 +83,7 @@ Carreguem el dataset i definim el nostre directori de treball
 #change working directory
 setwd("D:/Drive/UNI/Q8/MD")
 library(readr)
-df <- read_csv("group deliverable/data.csv")
+df <- read_csv("archive/train.csv")
 summary(df)
 ```
 
@@ -254,17 +254,16 @@ length(which(df$sc_h == 0))
 length(which(df$sc_w <= 1))
 
 df[df$sc_w <= 1,"sc_w"] <- NaN
-df[df$pc == 0, "pc"] <- NaN
 
 
 
 #knn imputation of sc_w NaN values using all the other numerical categories
 dfaux<-df[,c(var_num,"fc","px_height", "px_width","ram","sc_h","price_range")]
 names(dfaux)
-aux1 <- subset(dfaux, !is.na(df$sc_w) | !is.na(df$pc))#dfaux[subs(!is.na(df$sc_w),!is.na(df$pc)),]
-aux2 <- dfaux[is.na(c(df$sc_w,df$pc)),]
+aux1 <- dfaux[!is.na(df$sc_w),]
+aux2 <- dfaux[is.na(df$sc_w),]
 
-knn.ing = knn(aux1,aux2,df$sc_w[!is.na(c(df$sc_w,df$pc))])
+knn.ing = knn(aux1,aux2,df$sc_w[!is.na(c(df$sc_w))])
 
 df$sc_w[is.na(df$sc_w)] <- as.numeric(as.character(knn.ing))
 
