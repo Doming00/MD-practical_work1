@@ -9,6 +9,12 @@ author:
   - Singh, Jobanjot
         
 date: \today
+
+header-includes:
+- \usepackage{titling}
+- \pretitle{\begin{center}\LARGE\includegraphics[width=12cm]{first.jpg}\\[\bigskipamount]}
+- \posttitle{\end{center}}
+
 output:
   pdf_document:
     number_sections: yes
@@ -29,6 +35,7 @@ editor_options:
   chunk_output_type: console
 ---
 
+\newpage
 
 # Introduction
 
@@ -174,7 +181,7 @@ Finally the qualitative type variables are:
  * "fc", indicates the quality of the front camera and is divided into 5 modalities depending on the number of megapixels.
  * "pc", indicates the quality of the main camera and is divided into 5 modalities depending on the number of megapixels.
  * "px_height" and "px_width" are transformed into a new variable "pixel_dimension", which indicates the pixels per inch of the device and is divided into 4 modalities depending on the PPI.
- * "ram", which indicates the RAM and is divided into 3 modalities depending on the cost of the device .
+ * "ram", which indicates the RAM and is divided into 3 modalities depending on the cost of the device.
  * "sc_h" and "sc_w" are transformed into a new variable "screen_dimension", which indicates the size of the screen and is divided into 3 modalities depending on the size of the device.
  * "price range", which is divided into 4 modalities depending on the price range of the device.
 
@@ -1006,10 +1013,14 @@ paste("p-value Kruskal-Wallis:", kw$p.value)
 
 pvalk[,1]<-ValorTestXnum(dades[,1], P)
 #p-values ValorsTest:
-print(pvalk[,1])
+pvalk[,1]
+
+barplot(tapply(dades[[1]], P, mean),main=paste("Means of", names(dades)[1], "by", nameP ))
+abline(h=mean(dades[[1]]))
+legend(0,mean(dades[[1]]),"global mean",bty="n")
 ```
 
-We can see in the boxplots plotted that each cluster is represented by different values of battery power. Checking the statistics by cluster groups we can appreciate the same behaviour, as the intervals of min - max values don't overlap and they have very different quartile distributions, means and medians. Doing the Kruskal-Wallis test, since our data is not normally distributed, we can reject the null hypothesis and confirm that the variable battery power presents significant differences between the cluster classes. Because of that, we will do the test-values to find the differences between the battery power mean of each class with respect to the global mean of the variable. The p-values being close to zero indicates that there are strong differences between the global mean and the mean of the cluster. We can see the visual representation with barplots in the annex.
+We can see in the boxplots plotted that each cluster is represented by different values of battery power. Checking the statistics by cluster groups we can appreciate the same behaviour, as the intervals of min - max values don't overlap and they have very different quartile distributions, means and medians. Doing the Kruskal-Wallis test, since our data is not normally distributed, we can reject the null hypothesis and confirm that the variable battery power presents significant differences between the cluster classes. Because of that, we will do the test-values to find the differences between the battery power mean of each class with respect to the global mean of the variable. The p-values being close to zero indicates that there are strong differences between the global mean and the mean of the cluster.
 
 ```{r}
 paste("Anàlisi per classes de la Variable:", names(dades)[3])
@@ -1066,7 +1077,11 @@ paste("p-value Kruskal-Wallis:", kw$p.value)
 
 pvalk[,9]<-ValorTestXnum(dades[,9], P)
 #p-values ValorsTest:
-print(pvalk[,9])
+pvalk[,9]
+
+barplot(tapply(dades[[9]], P, mean),main=paste("Means of", names(dades)[9], "by", nameP ))
+abline(h=mean(dades[[9]]))
+legend(0,mean(dades[[9]]),"global mean",bty="n")
 ```
 
 With the mobile weight can see, again, that this variable is similar distributed in all the clusters, so it doesn't seems to be a explanatory variable for the cluster division. Doing the Kruskal-Wallis test we confirm our thoughts, despite the fact that the p-value is very low. Doing the test value just in case we find that only the last group has the enough difference between its median of the weight variable in comparison whit the global mean of the variable.
@@ -1103,7 +1118,7 @@ The last numerical variable is the talk time of the phones. This variable shows 
 ## Binary Variables
 
 ```{r}
-print(paste("Variable", names(dades)[2]))
+paste("Variable", names(dades)[2])
 #Cross-table
 table<-table(P,dades[,2])
 table
@@ -1115,14 +1130,14 @@ paleta<-rainbow(length(levels(dades[,2])))
 barplot(table(dades[,2], as.factor(P)), beside=FALSE,col=paleta )
 legend("topright",levels(as.factor(dades[,2])),pch=1,cex=0.5, col=paleta)
 
-print("Test Chi quadrat: ")
-print(chisq.test(dades[,2], as.factor(P)))
+#Test Chi quadrat:
+chisq.test(dades[,2], as.factor(P))
 ```
 
 The first binary variable we will check is the Bluetooth Yes/No variable. As we can see if we do the contingency table and the proportions by group, the variable is distributed equitably for all 4 groups, so it doesn't seems to explain any group in particular. The stacked bars shows a similar distributions within the clusters, which is confirmed by the Chi-Squared test. Since the p-value is not low enough to be significant, we can confirm that the clusters and the variable are not dependant. The proportions by category and the attached bars barplot can be found in the annex.
 
 ```{r}
-print(paste("Variable", names(dades)[4]))
+paste("Variable", names(dades)[4])
 #Cross-table
 table<-table(P,dades[,4])
 table
@@ -1134,14 +1149,14 @@ paleta<-rainbow(length(levels(dades[,4])))
 barplot(table(dades[,4], as.factor(P)), beside=FALSE,col=paleta )
 legend("topright",levels(as.factor(dades[,4])),pch=1,cex=0.5, col=paleta)
 
-print("Test Chi quadrat: ")
-print(chisq.test(dades[,4], as.factor(P)))
+#Test Chi quadrat:
+chisq.test(dades[,4], as.factor(P))
 ```
 
 As we have seen in the first binary variable, the Dual Sim variable also has a similar distribution in all groups, as the contingency table shows. The only group with a little difference is the first one, given that more mobiles with Dual Sim fall into that group. The Chi-Squared test confirms our thoughts, the p-values in not significant enough to consider this variable as an explanatory for the chosen clusters.
 
 ```{r}
-print(paste("Variable", names(dades)[6]))
+paste("Variable", names(dades)[6])
 #Cross-table
 table<-table(P,dades[,6])
 table
@@ -1153,15 +1168,15 @@ paleta<-rainbow(length(levels(dades[,6])))
 barplot(table(dades[,6], as.factor(P)), beside=FALSE,col=paleta )
 legend("topright",levels(as.factor(dades[,6])),pch=1,cex=0.5, col=paleta)
 
-print("Test Chi quadrat: ")
-print(chisq.test(dades[,6], as.factor(P)))
+#Test Chi quadrat:
+chisq.test(dades[,6], as.factor(P))
 ```
 
 The 4G Yes/No variable seems to have a uneven distribution in comparison with the other variables we checked. The third and fourth groups have more mobiles with 4G. The Chi-Squared test gives us a p-value even higher than the Dual Sim variable, so this variable is also not accepted as a explanatory variable for the groups.
 
 
 ```{r}
-print(paste("Variable", names(dades)[18]))
+paste("Variable", names(dades)[18])
 #Cross-table
 table<-table(P,dades[,18])
 table
@@ -1173,14 +1188,14 @@ paleta<-rainbow(length(levels(dades[,18])))
 barplot(table(dades[,18], as.factor(P)), beside=FALSE,col=paleta )
 legend("topright",levels(as.factor(dades[,18])),pch=1,cex=0.5, col=paleta)
 
-print("Test Chi quadrat: ")
-print(chisq.test(dades[,18], as.factor(P)))
+#Test Chi quadrat:
+chisq.test(dades[,18], as.factor(P))
 ```
 
 Seeing the contingency table and the proportions by group we can see that the 3G binary variable has a special distribution. Even though all groups have similar proportions, those proportions are not close to 50-50 as we have seen in the previous binary variables. All the groups have approximately 75% of mobiles with 3G and 25% of mobiles without them, which is obvious since this variable is very unbalanced. The p-value of the Chi-Squared test, again, confirms that this variable doesn't present significant differences between the clusters.
 
 ```{r}
-print(paste("Variable", names(dades)[19]))
+paste("Variable", names(dades)[19])
 #Cross-table
 table<-table(P,dades[,19])
 table
@@ -1192,14 +1207,14 @@ paleta<-rainbow(length(levels(dades[,19])))
 barplot(table(dades[,19], as.factor(P)), beside=FALSE,col=paleta )
 legend("topright",levels(as.factor(dades[,19])),pch=1,cex=0.5, col=paleta)
 
-print("Test Chi quadrat: ")
-print(chisq.test(dades[,19], as.factor(P)))
+#Test Chi quadrat:
+chisq.test(dades[,19], as.factor(P))
 ```
 
 We find a similar distribution with the first binary variables we checked and the Touch Screen variable. Again, the distribution is the same for all the classes and the Chi-Squared Test confirms that this variable is not important to describe the groups.
 
 ```{r}
-print(paste("Variable", names(dades)[20]))
+paste("Variable", names(dades)[20])
 #Cross-table
 table<-table(P,dades[,20])
 table
@@ -1211,8 +1226,8 @@ paleta<-rainbow(length(levels(dades[,20])))
 barplot(table(dades[,20], as.factor(P)), beside=FALSE,col=paleta )
 legend("topright",levels(as.factor(dades[,20])),pch=1,cex=0.5, col=paleta)
 
-print("Test Chi quadrat: ")
-print(chisq.test(dades[,20], as.factor(P)))
+#Test Chi quadrat:
+chisq.test(dades[,20], as.factor(P))
 ```
 
 The last binary variable we are going to analyse is the WiFi variable. The first and last cluster seem to have more mobiles with WiFi that the other groups in proportion, but not enough to be significant to represent them.
@@ -1220,7 +1235,7 @@ The last binary variable we are going to analyse is the WiFi variable. The first
 ## Categorical Variables
 
 ```{r}
-print(paste("Variable", names(dades)[5]))
+paste("Variable", names(dades)[5])
 #Cross-table
 table<-table(P,dades[,5])
 table
@@ -1231,14 +1246,16 @@ paleta<-rainbow(length(levels(dades[,5])))
 barplot(table(dades[,5], as.factor(P)), beside=FALSE,col=paleta )
 legend("topright",levels(as.factor(dades[,5])),pch=1,cex=0.5, col=paleta)
 
-print("Test Chi quadrat: ")
-print(chisq.test(dades[,5], as.factor(P)))
+#Test Chi quadrat:
+chisq.test(dades[,5], as.factor(P))
 ```
 
-
+The first categorical variable we are going to profile is the front camera quality. We can see in the contingency table and the proportion by groups that all the groups are not distributed similarly, but it doesn't seems to be enough differences between them to explain each groups by the variable categories.
+The barplots shows us the same, so we will check the Chi-Squared test to find if the variable and the clusters are independent. 
+As we see, the p-value is not significant enough to consider the variable and the groups dependant, so we can conclude saying that the front camera quality is not a variable that explains the different clusters.
 
 ```{r}
-print(paste("Variable", names(dades)[11]))
+paste("Variable", names(dades)[11])
 #Cross-table
 table<-table(P,dades[,11])
 table
@@ -1249,14 +1266,14 @@ paleta<-rainbow(length(levels(dades[,11])))
 barplot(table(dades[,11], as.factor(P)), beside=FALSE,col=paleta )
 legend("topright",levels(as.factor(dades[,11])),pch=1,cex=0.5, col=paleta)
 
-print("Test Chi quadrat: ")
-print(chisq.test(dades[,11], as.factor(P)))
+#Test Chi quadrat:
+chisq.test(dades[,11], as.factor(P))
 ```
 
-
+We can find a similar behaviour with the variable main camera quality. The groups have a distribution that variates a little for each group, but again, it doesn't seems to be different enough to consider the main camera a variable that explains the clusters. The Chi-Squared test confirms us that, even though the p-value is lower than in the first categorical variable.
 
 ```{r}
-print(paste("Variable", names(dades)[14]))
+paste("Variable", names(dades)[14])
 #Cross-table
 table<-table(P,dades[,14])
 table
@@ -1267,36 +1284,27 @@ paleta<-rainbow(length(levels(dades[,14])))
 barplot(table(dades[,14], as.factor(P)), beside=FALSE,col=paleta )
 legend("topright",levels(as.factor(dades[,14])),pch=1,cex=0.5, col=paleta)
 
-print("Test Chi quadrat: ")
-print(chisq.test(dades[,14], as.factor(P))) 
+#Test Chi quadrat:
+chisq.test(dades[,14], as.factor(P))
 
-###relevant variable
+#relevant variable
+#valorsTest:
+ValorTestXquali(P,dades[,14])
+
+marg <- table(as.factor(P))/n
+#condicionades a classes amb llegenda
+plot(marg,type="n",ylim=c(0,1),main=paste("Prop. of pos & neg by",names(dades)[14]))
+paleta<-rainbow(length(levels(dades[,14])))
+for(c in 1:length(levels(dades[,14]))){lines(rowperc[,c],col=paleta[c]) }
+legend("topright", levels(dades[,14]), col=paleta, lty=2, cex=0.6)
 ```
 
+With this variable we can start to find some differences between clusters. Having a lot of megabytes of RAM seems to be a key factor to represent the fourth group, and having a small and middle RAM seems to explain the second cluster. The barplots doesn't give us a lot of information so we will check with the Chi-Squared test if the variable and the clusters are dependant. The p-value that the test gives us is significant enough to consider the RAM categorical variable relevant, therefore we will do the test-values to see the relation between proportions of the category in every cluster and the proportion of all the data, and the p-values of each category and group.
 
-
-```{r}
-print(paste("Variable", names(dades)[21]))
-#Cross-table
-table<-table(P,dades[,21])
-table
-rowperc<-prop.table(table,1)
-rowperc
-#diagrames de barres apilades                                         
-paleta<-rainbow(length(levels(dades[,21])))
-barplot(table(dades[,21], as.factor(P)), beside=FALSE,col=paleta )
-legend("topright",levels(as.factor(dades[,21])),pch=1,cex=0.5, col=paleta)
-
-print("Test Chi quadrat: ")
-print(chisq.test(dades[,21], as.factor(P)))
-
-###relevant variable
-```
-
-
+We can see that the first group is related with the Low and Middle RAM category. The second group is related with all three categories, especially with the Low Ram, since it has a very low p-value. The third cluster is not related with any RAM category, but the fourth one is also strongly related with the High Ram category. We can visually see this doing a snake plot.
 
 ```{r}
-print(paste("Variable", names(dades)[22]))
+paste("Variable", names(dades)[22])
 #Cross-table
 table<-table(P,dades[,22])
 table
@@ -1307,14 +1315,14 @@ paleta<-rainbow(length(levels(dades[,22])))
 barplot(table(dades[,22], as.factor(P)), beside=FALSE,col=paleta )
 legend("topright",levels(as.factor(dades[,22])),pch=1,cex=0.5, col=paleta)
 
-print("Test Chi quadrat: ")
-print(chisq.test(dades[,22], as.factor(P)))
+#Test Chi quadrat:
+chisq.test(dades[,22], as.factor(P))
 ```
 
-
+The next variable we will profile is the screen dimension variable. Remember that this variables is a factor variable from two numerical variables that represented the screen height and width. With the contingency table and the proportions by row we check that the first group contains a bigger quantity of small phones, the third group has less medium sized phones and the last group has the most quantity of big phones. Even though the distribution is not the same for all the clusters, it doesn't variate enough to consider this variables as an explanatory, which the Chi-Square test confirms giving us a not enough significant p-value.
 
 ```{r}
-print(paste("Variable", names(dades)[23]))
+paste("Variable", names(dades)[23])
 #Cross-table
 table<-table(P,dades[,23])
 table
@@ -1325,58 +1333,18 @@ paleta<-rainbow(length(levels(dades[,23])))
 barplot(table(dades[,23], as.factor(P)), beside=FALSE,col=paleta )
 legend("topright",levels(as.factor(dades[,23])),pch=1,cex=0.5, col=paleta)
 
-print("Test Chi quadrat: ")
-print(chisq.test(dades[,23], as.factor(P)))
+#Test Chi quadrat:
+chisq.test(dades[,23], as.factor(P))
 ```
 
-
-
-
-
-```{r}
-##si son significatives: vvvvvvvvvvvvvvvvvvvv
-
-
-#from next plots, select one of them according to your practical case
-print("valorsTest:")
-print( ValorTestXquali(P,dades[,2]))
-
-   
-marg <- table(as.factor(P))/n
-
-#with legend
-plot(marg,type="l",ylim=c(0,1),main=paste("Prop. of pos & neg by",names(dades)[2]))
-paleta<-rainbow(length(levels(dades[,2])))
-for(c in 1:length(levels(dades[,2]))){lines(colperc[,c],col=paleta[c]) }
-legend("topright", levels(dades[,2]), col=paleta, lty=2, cex=0.6)
-     
-      #condicionades a classes
-      #with legend
-      plot(marg,type="n",ylim=c(0,1),main=paste("Prop. of pos & neg by",names(dades)[2]))
-      paleta<-rainbow(length(levels(dades[,2])))
-      for(c in 1:length(levels(dades[,2]))){lines(rowperc[,c],col=paleta[c]) }
-      legend("topright", levels(dades[,2]), col=paleta, lty=2, cex=0.6)
-     
-      
-      #amb variable en eix d'abcisses
-      marg <-table(dades[,2])/n
-      print(append("Categories=",levels(dades[,2])))
-      plot(marg,type="l",ylim=c(0,1),main=paste("Prop. of pos & neg by",names(dades)[2]), las=3)
-      paleta<-rainbow(length(levels(as.factor(P))))
-      for(c in 1:length(levels(as.factor(P)))){lines(rowperc[c,],col=paleta[c]) }
-      legend("topright", levels(as.factor(P)), col=paleta, lty=2, cex=0.6)
-     
-      
-      #condicionades a columna 
-      plot(marg,type="n",ylim=c(0,1),main=paste("Prop. of pos & neg by",names(dades)[2]), las=3)
-      paleta<-rainbow(length(levels(as.factor(P))))
-      for(c in 1:length(levels(as.factor(P)))){lines(colperc[c,],col=paleta[c]) }
-      legend("topright", levels(as.factor(P)), col=paleta, lty=2, cex=0.6)
-```
+The last variable we profile is the Pixels per Inch (pixel ratio) variable. We can see that the categories are equally distributed between the clusters, although the first and last groups seem to differ a bit with all the others. Doing the Chi-Squared test we can find if this differences are enough to consider this variable related to the clusters. The p-value gives us a high number, so it's not sufficiently significant to consider a relations between the variable and the groups.
 
 ## Classes' interpretation
 
-...{Joan}
+After profiling every category with the clusters we found doing the hierarchical clustering, we can try to interpret the cluster classes with the information we extracted in the previous sections. 
+
+The first cluster is characterized by having a very low battery power, much less than the average and the other classes, and contains mobiles without a High Ram capacity. The second cluster has mobiles with very low RAM and more battery power than the first group, but still bellow the average. The third cluster is the one that contains mobiles with very high battery power. Finally, the fourth group is characterized by mobiles with high ram capacity and with the less weight in comparison with the other groups.
+
 
 # Global discussions and general conclusions
 
@@ -1458,7 +1426,7 @@ for(i in 1:7) {
 
 ## Categorical variables projection
 
-# PROJECTION OF ILLUSTRATIVE qualitative variables on individuals' map
+## Porjection of illustrative qualitative variables on individuals' map
 
 ```{r categ_annex}
 for(i in 1:7) {
@@ -1688,6 +1656,11 @@ for(k in 1:K){
       abline(h=mean(dades[[k]]))
       legend(0,mean(dades[[k]]),"global mean",bty="n")
       
+      pvalk[,1]<-ValorTestXnum(dades[,1], P)
+      #p-values ValorsTest:
+      pvalk[,1]
+      
+      
   } else{
       table<-table(P,dades[,k])
       colperc<-prop.table(table,2)
@@ -1696,6 +1669,26 @@ for(k in 1:K){
       #diagrames de barres adosades
       barplot(table(dades[,k], as.factor(P)), beside=TRUE,col=paleta )
       legend("topright",levels(as.factor(dades[,k])),pch=1,cex=0.5, col=paleta)
+      
+        #with legend
+        plot(marg,type="l",ylim=c(0,1),main=paste("Prop. of pos & neg by",names(dades)[k]))
+        paleta<-rainbow(length(levels(dades[,k])))
+        for(c in 1:length(levels(dades[,k]))){lines(colperc[,c],col=paleta[c]) }
+        legend("topright", levels(dades[,k]), col=paleta, lty=2, cex=0.6)
+        
+        #amb variable en eix d'abcisses
+        marg <-table(dades[,k])/n
+        print(append("Categories=",levels(dades[,k])))
+        plot(marg,type="l",ylim=c(0,1),main=paste("Prop. of pos & neg by",names(dades)[k]), las=3)
+        paleta<-rainbow(length(levels(as.factor(P))))
+        for(c in 1:length(levels(as.factor(P)))){lines(rowperc[c,],col=paleta[c]) }
+        legend("topright", levels(as.factor(P)), col=paleta, lty=2, cex=0.6)
+             
+        #condicionades a columna 
+        plot(marg,type="n",ylim=c(0,1),main=paste("Prop. of pos & neg by",names(dades)[k]), las=3)
+        paleta<-rainbow(length(levels(as.factor(P))))
+        for(c in 1:length(levels(as.factor(P)))){lines(colperc[c,],col=paleta[c]) }
+        legend("topright", levels(as.factor(P)), col=paleta, lty=2, cex=0.6) 
       
   }
 }
